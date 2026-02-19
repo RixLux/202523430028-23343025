@@ -1,9 +1,9 @@
 site_name: 202523430028-23343025 Documentation
 site_description: Documentation
-site_url: https://ipaddr.github.io/202523430028-23343025/
+site_url: https://RixLux.github.io/202523430028-23343025/
 
-repo_name: ipaddr/202523430028-23343025
-repo_url: https://github.com/ipaddr/202523430028-23343025
+repo_name: RixLux/202523430028-23343025
+repo_url: https://github.com/RixLux/202523430028-23343025
 
 theme:
   name: material
