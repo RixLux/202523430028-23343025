@@ -1,0 +1,54 @@
+site_name: 202523430028-23343025 Documentation
+site_description: Documentation
+site_url: https://ipaddr.github.io/202523430028-23343025/
+
+repo_name: ipaddr/202523430028-23343025
+repo_url: https://github.com/ipaddr/202523430028-23343025
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - search.share
+    - content.code.copy
+
+  palette:
+    # Light Mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep-purple           # Change this to your preferred light-mode header color
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Dark Mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black          # Change this to your preferred dark-mode header color
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+nav:
+  - index: index.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+
+plugins:
+  - search
+
+extra_css:
+  - stylesheets/extra.css
