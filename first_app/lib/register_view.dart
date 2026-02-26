@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'register_view.dart';
+import 'login_view.dart';
 
-class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+class RegisterView extends StatefulWidget {
+  const RegisterView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<RegisterView> createState() => _RegisterViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _RegisterViewState extends State<RegisterView> {
   // 1. Variables
   late final TextEditingController _email;
   late final TextEditingController _password;
@@ -30,7 +30,7 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text('Register')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -53,9 +53,9 @@ class _LoginViewState extends State<LoginView> {
                 final email = _email.text;
                 final password = _password.text;
                 // Todo later: plug in Firebase
-                print('Logging in with $email');
+                print('Registering with $email');
               },
-              child: const Text('Login'),
+              child: const Text('Register'),
             ),
 
 
@@ -63,10 +63,10 @@ class _LoginViewState extends State<LoginView> {
             onPressed: () {
                 // This navigates to the Register screen
                 Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const RegisterView()),
+                MaterialPageRoute(builder: (context) => const LoginView()),
                 );
             },
-            child: const Text('Not registered yet? Register here!'),
+            child: const Text('Already have an account? Login here!'),
             ),
           ],
         ),

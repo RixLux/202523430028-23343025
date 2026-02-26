@@ -1,6 +1,7 @@
 // main.dart
 import 'package:flutter/material.dart';
 import 'login_view.dart';
+import 'register_view.dart';
 
 void main() {
   runApp(const MyApp());
