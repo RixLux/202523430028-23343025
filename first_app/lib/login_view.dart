@@ -60,33 +60,41 @@ class _LoginViewState extends State<LoginView> {
                     email: email,
                     password: password,
                   );
-                  print('User logged in: ${userCredential.user}');
 
-                  // ToDo: Create something after succesful login :)
-                    Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false);
+                  if (!mounted) return;
+
+                  // succesful login :)
+                  Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false);
 
                 } on FirebaseAuthException catch (e) {
-                  // Handle specific Login errors
-                  if (e.code == 'user-not-found') {
-                    print('No user found for that email.');
-                  } else if (e.code == 'wrong-password') {
-                    print('Wrong password provided.');
-                  } else {
-                    print('Auth Error: ${e.code}');
+                    String errorMessage = 'An error occurred';
+
+
+                    if (e.code == 'user-not-found' || e.code == 'invalid-credential') {
+                      errorMessage = 'Invalid login credentials.';
+                    } else if (e.code == 'wrong-password') {
+                      errorMessage = 'Wrong password provided.';
+                    } else if (e.code == 'channel-error') {
+                      errorMessage = 'Please fill in all fields.';
+                    }
+
+                    // Show a snackbar to the user
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(errorMessage)),
+                    );
+                  } catch (e) {
+                    print(e); // For debugging
                   }
-                } catch (e) {
-                  print('Something went wrong: $e');
-                }
-              },
+                },
               child: const Text('Login'),
             ),
 
             // Navigation
             TextButton(
               onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const RegisterView()),
-                  (route) => false, // removes the Login screen from the stack
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/register/',
+                  (route) => false,
                 );
               },
               child: const Text('Not registered yet? Register here!'),
