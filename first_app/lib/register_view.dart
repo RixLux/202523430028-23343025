@@ -1,5 +1,8 @@
+//register_view.dart
+
 import 'package:flutter/material.dart';
 import 'login_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -9,7 +12,7 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
-  // 1. Variables
+  // Variables
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -35,7 +38,7 @@ class _RegisterViewState extends State<RegisterView> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // 2. Input Fields
+            // Input Fields
             TextField(
               controller: _email,
               decoration: const InputDecoration(hintText: 'Enter email'),
@@ -47,23 +50,48 @@ class _RegisterViewState extends State<RegisterView> {
               obscureText: true, // Hides password dots
             ),
 
-            // 3. The Action Button
+            // Action Button
             TextButton(
-              onPressed: () async {
+            onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
-                // Todo later: plug in Firebase
-                print('Registering with $email');
-              },
-              child: const Text('Register'),
+
+                try {
+                final userCredential = await FirebaseAuth.instance
+                    .createUserWithEmailAndPassword(
+                    email: email,
+                    password: password,
+                );
+
+                print('Successfully registered: ${userCredential.user?.email}');
+
+                // ToDO later: Navigate to Login
+                // Navigator.of(context).pushNamedAndRemoveUntil('/login/', (route) => false);
+
+                } on FirebaseAuthException catch (e) {
+                // Handle specific Firebase errors
+                if (e.code == 'weak-password') {
+                    print('The password provided is too weak.');
+                } else if (e.code == 'email-already-in-use') {
+                    print('The account already exists for that email.');
+                } else if (e.code == 'invalid-email') {
+                    print('The email address is badly formatted.');
+                }
+                } catch (e) {
+                // Handle any other unexpected errors
+                print('Something went wrong: $e');
+                }
+            },
+            child: const Text('Register'),
             ),
 
 
             TextButton(
             onPressed: () {
                 // This navigates to the Register screen
-                Navigator.of(context).push(
+                Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const LoginView()),
+                (route) => false
                 );
             },
             child: const Text('Already have an account? Login here!'),
