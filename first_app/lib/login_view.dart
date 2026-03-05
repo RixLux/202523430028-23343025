@@ -1,4 +1,7 @@
+//login_view.dart
+
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'register_view.dart';
 
 class LoginView extends StatefulWidget {
@@ -9,7 +12,6 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  // 1. Variables
   late final TextEditingController _email;
   late final TextEditingController _password;
 
@@ -35,7 +37,6 @@ class _LoginViewState extends State<LoginView> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // 2. Input Fields
             TextField(
               controller: _email,
               decoration: const InputDecoration(hintText: 'Enter email'),
@@ -44,29 +45,50 @@ class _LoginViewState extends State<LoginView> {
             TextField(
               controller: _password,
               decoration: const InputDecoration(hintText: 'Enter password'),
-              obscureText: true, // Hides password dots
+              obscureText: true,
             ),
 
-            // 3. The Action Button
+            // Updated Login Button with Firebase
             TextButton(
               onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
-                // Todo later: plug in Firebase
-                print('Logging in with $email');
+
+                try {
+                  final userCredential = await FirebaseAuth.instance
+                      .signInWithEmailAndPassword(
+                    email: email,
+                    password: password,
+                  );
+                  print('User logged in: ${userCredential.user}');
+
+                  // ToDo: Create something after succesful login :)
+
+                } on FirebaseAuthException catch (e) {
+                  // Handle specific Login errors
+                  if (e.code == 'user-not-found') {
+                    print('No user found for that email.');
+                  } else if (e.code == 'wrong-password') {
+                    print('Wrong password provided.');
+                  } else {
+                    print('Auth Error: ${e.code}');
+                  }
+                } catch (e) {
+                  print('Something went wrong: $e');
+                }
               },
               child: const Text('Login'),
             ),
 
-
+            // Navigation
             TextButton(
-            onPressed: () {
-                // This navigates to the Register screen
-                Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const RegisterView()),
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const RegisterView()),
+                  (route) => false, // removes the Login screen from the stack
                 );
-            },
-            child: const Text('Not registered yet? Register here!'),
+              },
+              child: const Text('Not registered yet? Register here!'),
             ),
           ],
         ),
