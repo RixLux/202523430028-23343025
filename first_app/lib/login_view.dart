@@ -63,6 +63,7 @@ class _LoginViewState extends State<LoginView> {
                   print('User logged in: ${userCredential.user}');
 
                   // ToDo: Create something after succesful login :)
+                    Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false);
 
                 } on FirebaseAuthException catch (e) {
                   // Handle specific Login errors

@@ -4,6 +4,8 @@ import 'login_view.dart';
 import 'register_view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'main_ui.dart';
+import 'notes_view.dart';
 
 void main() async {
   // Ensure Flutter is ready for native calls
@@ -25,7 +27,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const LoginView(),
+      home: const HomePage(),
+      routes: {
+      '/login/': (context) => const LoginView(),
+      '/register/': (context) => const RegisterView(),
+      '/notes/': (context) => const NotesView(),
+    },
     );
   }
 }
