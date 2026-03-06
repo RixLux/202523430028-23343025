@@ -1,9 +1,9 @@
-site_name: 202523430028-23343025 Documentation
-site_description: Documentation
-site_url: https://RixLux.github.io/202523430028-23343025/
+site_name: "202523430028-23343025 Documentation"
+site_description: "Documentation"
+site_url: "https://rixlux.github.io/202523430028-23343025/"
 
-repo_name: RixLux/202523430028-23343025
-repo_url: https://github.com/RixLux/202523430028-23343025
+repo_name: "RixLux/202523430028-23343025"
+repo_url: "https://github.com/RixLux/202523430028-23343025"
 
 theme:
   name: material
@@ -18,25 +18,25 @@ theme:
     - content.code.copy
 
   palette:
-    # Light Mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: deep-purple           # Change this to your preferred light-mode header color
+      primary: deep-purple
       accent: indigo
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
 
-    # Dark Mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: black          # Change this to your preferred dark-mode header color
+      primary: black
       accent: blue
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+
 nav:
-  - index: index.md
+  - Home: index.md
+  - ToDO: ToDO.md
 
 markdown_extensions:
   - admonition

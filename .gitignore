@@ -137,4 +137,15 @@ __pycache__/
 dist/
 build/
 
+# Firebase / Android secrets
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Flutter/Dart generated secrets
+lib/firebase_options.dart
+
+
+# --- MkDocs ---
+*/__pycache__/
+
 

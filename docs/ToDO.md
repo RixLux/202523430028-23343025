@@ -4,23 +4,23 @@
 
 * [x] `00:00:00` Introduction
 * [ ] `00:02:57` Developer Accounts
-* [ ] `00:39:12` Setup
+* [x] `00:39:12` Setup
 * [x] `01:14:42` Introduction to Dart
 * [x] `02:01:26` Dart Control Statements and Collections
 * [x] `02:46:44` Sound Null safety in Dart
 * [x] `03:27:12` Dart Enumerations, Classes and Objects
-* [ ] `04:18:36` Advanced Dart
-* [ ] `05:00:41` Project Setup
+* [x] `04:18:36` Advanced Dart
+* [x] `05:00:41` Project Setup
 * [ ] `05:48:30` iOS App Setup
-* [ ] `06:59:32` Android App Setup
-* [ ] `07:31:31` Firebase Backend Setup
+* [x] `06:59:32` Android App Setup
+* [x] `07:31:31` Firebase Backend Setup
 * [x] `08:01:20` Basic Registration Screen
 * [x] `09:04:54` Login View
-* [ ] `09:53:10` Separating App Initialization from Login and Register
+* [x] `09:53:10` Separating App Initialization from Login and Register
 
 ### ✅ Minggu 3: Autentikasi & Arsitektur Service
 
-* [ ] `10:19:47` Setting up Git and GitHub
+* [x] `10:19:47` Setting up Git and GitHub
 * [ ] `11:10:34` Email Verification View
 * [ ] `11:44:45` Link Between Login and Register Views
 * [ ] `12:18:01` Logout View
