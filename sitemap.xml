@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://RixLux.github.io/202523430028-23343025/</loc>
-         <lastmod>2026-02-19</lastmod>
+         <loc>https://rixlux.github.io/202523430028-23343025/</loc>
+         <lastmod>2026-03-12</lastmod>
+    </url>
+    <url>
+         <loc>https://rixlux.github.io/202523430028-23343025/ToDO/</loc>
+         <lastmod>2026-03-12</lastmod>
+    </url>
+    <url>
+         <loc>https://rixlux.github.io/202523430028-23343025/Week3/</loc>
+         <lastmod>2026-03-12</lastmod>
+    </url>
+    <url>
+         <loc>https://rixlux.github.io/202523430028-23343025/firebase/</loc>
+         <lastmod>2026-03-12</lastmod>
     </url>
 </urlset>

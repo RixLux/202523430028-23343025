@@ -1,24 +1,8 @@
-/* Custom colors for light mode */
-
-/*
- --md-typeset-color,   Main body text
- --md-typeset-a-color,   Links
- --md-default-fg-color--light,   Secondary/de-emphasized text
- --md-code-fg-color,   Text inside code blocks
- */
-
-:root {
-    --md-typeset-color: #FAE1FA;
-}
-
-/* Specific override for Light Mode */
+:root { --md-typeset-color: #7E56C2; }
 [data-md-color-scheme="default"] {
     --md-typeset-color: #7E56C2;
     --md-code-fg-color: #4D21CB;
     --md-typeset-a-color: #4D21CB;
     --md-default-fg-color--light: #4D21CB;
-
-/* Specific override for Dark Mode (Slate) */
-[data-md-color-scheme="slate"] {
-    --md-typeset-color: #e5e9f0;
 }
+[data-md-color-scheme="slate"] { --md-typeset-color: #e5e9f0; }
