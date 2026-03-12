@@ -1,9 +1,8 @@
 // main.dart
 import 'package:flutter/material.dart';
+import 'auth_service.dart';
 import 'login_view.dart';
 import 'register_view.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 import 'main_ui.dart';
 import 'notes_view.dart';
 import 'verify_email_view.dart';
@@ -12,10 +11,8 @@ void main() async {
   // Ensure Flutter is ready for native calls
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase using the generated options
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  // Initialize Auth using the Service
+  await AuthService().initialize();
 
   runApp(const MyApp());
 }

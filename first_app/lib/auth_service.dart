@@ -1,49 +1,52 @@
-import 'package:firebase_auth/firebase_auth.dart';
+//auth_service.dart
 
-class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+import 'auth/auth_provider.dart';
+import 'auth/auth_user.dart';
+import 'auth/firebase_auth_provider.dart';
 
-  static final AuthService _shared = AuthService._sharedInstance();
-  AuthService._sharedInstance();
+export 'auth/auth_user.dart';
+export 'auth/auth_exceptions.dart';
+export 'auth/auth_provider.dart';
+
+class AuthService implements AuthProvider {
+  final AuthProvider provider;
+  const AuthService._(this.provider);
+
+  static late final AuthService _shared = AuthService._(FirebaseAuthProvider());
   factory AuthService() => _shared;
 
-  User? get currentUser => _auth.currentUser;
+  @override
+  Future<void> initialize() => provider.initialize();
 
-  Future<UserCredential> signIn({
+  @override
+  AuthUser? get currentUser => provider.currentUser;
+
+  @override
+  Future<AuthUser> logIn({
     required String email,
     required String password,
-  }) async {
-    return await _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-  }
+  }) =>
+      provider.logIn(
+        email: email,
+        password: password,
+      );
 
-  Future<UserCredential> createUser({
+  @override
+  Future<AuthUser> createUser({
     required String email,
     required String password,
-  }) async {
-    return await _auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-  }
+  }) =>
+      provider.createUser(
+        email: email,
+        password: password,
+      );
 
-  Future<void> logOut() async {
-    await _auth.signOut();
-  }
+  @override
+  Future<void> logOut() => provider.logOut();
 
-  Future<void> sendEmailVerification() async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      await user.sendEmailVerification();
-    }
-  }
+  @override
+  Future<void> sendEmailVerification() => provider.sendEmailVerification();
 
-  Future<void> reloadUser() async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      await user.reload();
-    }
-  }
+  @override
+  Future<void> reloadUser() => provider.reloadUser();
 }

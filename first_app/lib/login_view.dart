@@ -56,7 +56,7 @@ class _LoginViewState extends State<LoginView> {
                 final password = _password.text;
 
                 try {
-                  await AuthService().signIn(
+                  await AuthService().logIn(
                     email: email,
                     password: password,
                   );
@@ -67,7 +67,7 @@ class _LoginViewState extends State<LoginView> {
                   if (!mounted) return;
 
                   // succesful login :)
-                  if (freshUser?.emailVerified ?? false) {
+                  if (freshUser?.isEmailVerified ?? false) {
                     // SUCCESS: Email is verified
                     Navigator.of(context).pushNamedAndRemoveUntil(
                         '/notes/',
@@ -88,16 +88,21 @@ class _LoginViewState extends State<LoginView> {
                     );
                     }
 
-                } catch (e) {
-                    String errorMessage = 'An error occurred';
-
-                    // Note: still catching generic exceptions
-                    // ToDo : refine this by mapping AuthService specific exceptions later back.
-
-
-                    // Show a snackbar to the user
+                } on UserNotFoundAuthException {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(errorMessage)),
+                      const SnackBar(content: Text('User not found.')),
+                    );
+                } on InvalidCredentialsAuthException {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Invalid credentials.')),
+                    );
+                } on GenericAuthException {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Authentication error.')),
+                    );
+                } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('An error occurred.')),
                     );
                   }
                 },

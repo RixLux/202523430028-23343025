@@ -33,7 +33,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
     await AuthService().reloadUser();
     final user = AuthService().currentUser;
 
-    if (user?.emailVerified ?? false) {
+    if (user?.isEmailVerified ?? false) {
       _timer?.cancel();
 
       // 2. Update the state to show success UI

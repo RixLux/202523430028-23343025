@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
     final user = AuthService().currentUser;
 
     if (user != null) {
-      if (user.emailVerified) {
+      if (user.isEmailVerified) {
         return const NotesView();
       } else {
         return const VerifyEmailView();

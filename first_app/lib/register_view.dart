@@ -72,6 +72,22 @@ class _RegisterViewState extends State<RegisterView> {
                     (route) => false,
                 );
 
+                } on WeakPasswordAuthException {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Weak password.')),
+                  );
+                } on EmailAlreadyInUseAuthException {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Email already in use.')),
+                  );
+                } on InvalidEmailAuthException {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Invalid email.')),
+                  );
+                } on GenericAuthException {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Registration error.')),
+                  );
                 } catch (e) {
                 // Handle any other unexpected errors
                 print('Something went wrong: $e');
