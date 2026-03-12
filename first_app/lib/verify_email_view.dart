@@ -1,8 +1,8 @@
 // verify_email_view.dart
 
 import 'dart:async'; // for timer :)
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'auth_service.dart';
 
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
@@ -30,8 +30,8 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
   }
 
   Future<void> checkEmailVerified() async {
-    final user = FirebaseAuth.instance.currentUser;
-    await user?.reload();
+    await AuthService().reloadUser();
+    final user = AuthService().currentUser;
 
     if (user?.emailVerified ?? false) {
       _timer?.cancel();
@@ -81,14 +81,14 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               ),
               TextButton(
                 onPressed: () async {
-                  await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+                  await AuthService().sendEmailVerification();
                 },
                 child: const Text('Resend Email'),
               ),
               TextButton(
                 onPressed: () async {
                   _timer?.cancel();
-                  await FirebaseAuth.instance.signOut();
+                  await AuthService().logOut();
                   if (!mounted) return;
                   Navigator.of(context).pushNamedAndRemoveUntil(
                     '/register/',

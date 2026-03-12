@@ -1,7 +1,7 @@
 //login_view.dart
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'auth_service.dart';
 import 'register_view.dart';
 import 'verify_email_view.dart';
 
@@ -56,15 +56,13 @@ class _LoginViewState extends State<LoginView> {
                 final password = _password.text;
 
                 try {
-                  final userCredential = await FirebaseAuth.instance
-                      .signInWithEmailAndPassword(
+                  await AuthService().signIn(
                     email: email,
                     password: password,
                   );
 
-                  final user = userCredential.user;
-                    await user?.reload();
-                    final freshUser = FirebaseAuth.instance.currentUser;
+                  await AuthService().reloadUser();
+                  final freshUser = AuthService().currentUser;
 
                   if (!mounted) return;
 
@@ -90,24 +88,17 @@ class _LoginViewState extends State<LoginView> {
                     );
                     }
 
-                } on FirebaseAuthException catch (e) {
+                } catch (e) {
                     String errorMessage = 'An error occurred';
 
+                    // Note: still catching generic exceptions
+                    // ToDo : refine this by mapping AuthService specific exceptions later back.
 
-                    if (e.code == 'user-not-found' || e.code == 'invalid-credential') {
-                      errorMessage = 'Invalid login credentials.';
-                    } else if (e.code == 'wrong-password') {
-                      errorMessage = 'Wrong password provided.';
-                    } else if (e.code == 'channel-error') {
-                      errorMessage = 'Please fill in all fields.';
-                    }
 
                     // Show a snackbar to the user
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(errorMessage)),
                     );
-                  } catch (e) {
-                    print(e); // For debugging
                   }
                 },
               child: const Text('Login'),

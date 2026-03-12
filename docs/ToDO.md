@@ -21,7 +21,7 @@
 ### ✅ Minggu 3: Autentikasi & Arsitektur Service
 
 * [x] `10:19:47` Setting up Git and GitHub
-* [ ] `11:10:34` Email Verification View
+* [x] `11:10:34` Email Verification View
 * [x] `11:44:45` Link Between Login and Register Views
 * [x] `12:18:01` Logout View
 * [x] `13:13:46` Go From Login to Notes View
@@ -29,9 +29,9 @@
 * [x] `13:51:17` Error Handling in Login View
 * [x] `14:16:21` Error Handling in Register View, Next Screen After
 * [x] `14:44:45` Confirming Identity Before Going to Main UI
-* [ ] `14:52:21` Auth Service
-* [ ] `15:55:22` Migrating to Auth Service
-* [ ] `16:33:41` Unit Testing our AuthService
+* [x] `14:52:21` Auth Service
+* [x] `15:55:22` Migrating to Auth Service
+* [x] `16:33:41` Unit Testing our AuthService
 * [ ] `17:43:42` CRUD Local Storage
 
 ### ✅ Minggu 4: Manajemen Data & Cloud Firestore
