@@ -27,7 +27,7 @@ export 'auth/auth_user.dart';
 export 'auth/auth_exceptions.dart';
 export 'auth/auth_provider.dart';
 ```
-> Replace `firebase_auth_provider.dart` with other provider or custom provider
+> Replace `firebase_auth_provider.dart` with other provider.
 
 ### 3. Clean Exception Handling
 
@@ -43,3 +43,57 @@ Modified `main.dart` to remove direct Firebase dependencies.
 
 * Replaced Firebase-specific setup with `AuthService().initialize()`.
 * The application entry point is now completely unaware of which authentication provider is being utilized under the hood.
+
+
+## CRUD local storage
+
+### Key Components
+   * **`DatabaseNote`**: A model class representing the database row (ID, Text, UserID).
+   * **`NotesService`**: A singleton service handling database initialization, table creation, and CRUD (Create, Read, Update, Delete) operations.
+   * **`FutureBuilder` Integration**: The `NotesView` uses a `FutureBuilder` to asynchronously load and refresh the notes list.
+ 
+ 
+### Platform Note
+   `sqflite` is a native plugin. **It does not support Flutter Web.**
+   * To test the notes feature, you **must** use an Android or iOS emulator/device.
+   * Running on Web will result in a `Database not open` exception.
+
+> this one use sqflite as dependency
+
+```
+dependencies:
+  flutter:
+    sdk: flutter
+  # Add these three lines:
+  sqflite: ^2.3.0
+  path_provider: ^2.1.2
+  path: ^1.9.0
+```
+> look for it on `pubspec.yaml` and add it  
+
+next run these to install it
+```
+flutter pub get
+```
+
+also to make sure that the app work properly on waydroid we need to change the build engine
+
+```
+<application
+        android:label="first_app"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
+
+        <activity
+            android:name=".MainActivity"
+            ... >
+            </activity>
+    </application>
+```
+> make sure it look like this
+
+look for this at `android/app/src/main/AndroidManifest.xml`

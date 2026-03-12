@@ -32,16 +32,16 @@
 * [x] `14:52:21` Auth Service
 * [x] `15:55:22` Migrating to Auth Service
 * [x] `16:33:41` Unit Testing our AuthService
-* [ ] `17:43:42` CRUD Local Storage
+* [x] `17:43:42` CRUD Local Storage
 
 ### ✅ Minggu 4: Manajemen Data & Cloud Firestore
 
 * [ ] `19:30:57` Working with Streams in Notes Service
-* [ ] `20:04:32` Preparing Notes View to Read All Notes
-* [ ] `20:39:21` Preparing to Create New Notes
-* [ ] `21:00:16` Creating New Notes
-* [ ] `21:35:42` Displaying Notes in Notes View
-* [ ] `21:56:04` Deleting Existing Notes in Notes View
+* [x] `20:04:32` Preparing Notes View to Read All Notes
+* [x] `20:39:21` Preparing to Create New Notes
+* [x] `21:00:16` Creating New Notes
+* [x] `21:35:42` Displaying Notes in Notes View
+* [x] `21:56:04` Deleting Existing Notes in Notes View
 * [ ] `22:40:46` Updating Existing Notes
 * [ ] `23:14:12` Protecting NotesService with Current User
 * [ ] `23:40:44` Writing Notes to Cloud Firestore
