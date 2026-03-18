@@ -1,0 +1,28 @@
+0 Apple Braeburn
+1 Apple Crimson Snow
+2 Apple Golden
+3 Apricot
+4 Avocado
+5 Banana
+6 Blueberry
+7 Cherry
+8 Eggplant
+9 Guava
+10 Lemon
+11 Limes
+12 Mango
+13 Onion Red
+14 Onion White
+15 Orange
+16 Papaya
+17 Pear
+18 Pineapple
+19 Rambutan
+20 Salak
+21 Strawberry
+22 Tomato
+23 Raspberry
+24 Cauliflower
+25 Cabbage red
+26 Cabbage White
+27 Carrot

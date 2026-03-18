@@ -36,7 +36,9 @@ theme:
 
 nav:
   - Home: index.md
+  - Firebase: firebase.md
   - ToDO: ToDO.md
+  - Week3: Week3.md
 
 markdown_extensions:
   - admonition
