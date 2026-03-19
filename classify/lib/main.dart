@@ -1,122 +1,297 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:image/image.dart' as img;
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ClassifyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ClassifyApp extends StatelessWidget {
+  const ClassifyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'TFLite Flutter x86_64',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        scaffoldBackgroundColor: const Color(0xFFFAE1FA),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const ClassificationScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class ClassificationScreen extends StatefulWidget {
+  const ClassificationScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ClassificationScreen> createState() => _ClassificationScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _ClassificationScreenState extends State<ClassificationScreen> {
+  bool _loading = true;
+  File? _image;
+  String? _label;
+  double? _confidence;
+  final _picker = ImagePicker();
+  
+  Interpreter? _interpreter;
+  List<String>? _labels;
 
-  void _incrementCounter() {
+  @override
+  void initState() {
+    super.initState();
+    _initTflite();
+  }
+
+  Future<void> _initTflite() async {
+    try {
+      await _loadModel();
+      await _loadLabels();
+      setState(() {
+        _loading = false;
+      });
+    } catch (e) {
+      debugPrint("Error initializing TFLite: $e");
+    }
+  }
+
+  Future<void> _loadModel() async {
+    _interpreter = await Interpreter.fromAsset('assets/model_unquant.tflite');
+    debugPrint("Model loaded successfully");
+  }
+
+  Future<void> _loadLabels() async {
+    final labelsData = await rootBundle.loadString('assets/labels.txt');
+    _labels = labelsData.split('\n').where((s) => s.isNotEmpty).toList();
+    debugPrint("Labels loaded: ${_labels?.length}");
+  }
+
+  @override
+  void dispose() {
+    _interpreter?.close();
+    super.dispose();
+  }
+
+  Future<void> _classifyImage(File imageFile) async {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _loading = true;
     });
+
+    try {
+      // 1. Preprocess image
+      final imageData = imageFile.readAsBytesSync();
+      img.Image? originalImage = img.decodeImage(imageData);
+      if (originalImage == null) return;
+
+      // MobileNetV2 usually takes 224x224
+      img.Image resizedImage = img.copyResize(originalImage, width: 224, height: 224);
+
+      // 2. Prepare input tensor
+      // Shape: [1, 224, 224, 3]
+      var input = Float32List(1 * 224 * 224 * 3).reshape([1, 224, 224, 3]);
+      for (var y = 0; y < 224; y++) {
+        for (var x = 0; x < 224; x++) {
+          var pixel = resizedImage.getPixel(x, y);
+          // Normalization: (x - 127.5) / 127.5 -> Range [-1, 1]
+          input[0][y][x][0] = (pixel.r - 127.5) / 127.5;
+          input[0][y][x][1] = (pixel.g - 127.5) / 127.5;
+          input[0][y][x][2] = (pixel.b - 127.5) / 127.5;
+        }
+      }
+
+      // 3. Prepare output tensor
+      // Assuming model outputs a list of probabilities [1, num_classes]
+      var output = Float32List(1 * _labels!.length).reshape([1, _labels!.length]);
+
+      // 4. Run inference
+      _interpreter?.run(input, output);
+
+      // 5. Postprocess results
+      List<double> results = List<double>.from(output[0]);
+      double maxProb = -1.0;
+      int maxIndex = -1;
+      for (int i = 0; i < results.length; i++) {
+        if (results[i] > maxProb) {
+          maxProb = results[i];
+          maxIndex = i;
+        }
+      }
+
+      setState(() {
+        _label = _labels![maxIndex];
+        _confidence = maxProb;
+        _loading = false;
+      });
+    } catch (e) {
+      debugPrint("Classification error: $e");
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+      await _classifyImage(_image!);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            const SizedBox(height: 80),
+            const Text(
+              "Waydroid x86_64 Compatible",
+              style: TextStyle(
+                color: Color(0xFF5A4B5A),
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
             ),
+            const SizedBox(height: 8),
+            const Text(
+              "TFLite Flutter",
+              style: TextStyle(
+                color: Color(0xFF322A32),
+                fontWeight: FontWeight.bold,
+                fontSize: 28,
+              ),
+            ),
+            const SizedBox(height: 40),
+            Center(
+              child: _loading
+                  ? _buildLoader()
+                  : _buildPreview(),
+            ),
+            const Spacer(),
+            _buildBottomButtons(),
+            const SizedBox(height: 60),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    );
+  }
+
+  Widget _buildLoader() {
+    return Container(
+      width: 280,
+      height: 280,
+      decoration: _softBoxDecoration(),
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(color: Color(0xFF5A4B5A)),
+          SizedBox(height: 20),
+          Text("Processing...", style: TextStyle(color: Color(0xFF5A4B5A))),
+        ],
       ),
+    );
+  }
+
+  Widget _buildPreview() {
+    return Column(
+      children: [
+        Container(
+          height: 280,
+          width: 280,
+          decoration: _softBoxDecoration(),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: _image == null
+                ? const Icon(Icons.image_outlined, size: 80, color: Color(0xFF5A4B5A))
+                : Image.file(_image!, fit: BoxFit.cover),
+          ),
+        ),
+        const SizedBox(height: 40),
+        if (_label != null)
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.3),
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: Colors.white.withOpacity(0.2)),
+            ),
+            child: Column(
+              children: [
+                Text(
+                  _label!.toUpperCase(),
+                  style: const TextStyle(
+                    color: Color(0xFF322A32),
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "Confidence: ${(_confidence! * 100).toStringAsFixed(1)}%",
+                  style: const TextStyle(color: Color(0xFF5A4B5A), fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildBottomButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _buildActionButton(
+          icon: Icons.camera_alt_rounded,
+          label: "Camera",
+          onTap: () => _pickImage(ImageSource.camera),
+        ),
+        const SizedBox(width: 24),
+        _buildActionButton(
+          icon: Icons.photo_library_rounded,
+          label: "Gallery",
+          onTap: () => _pickImage(ImageSource.gallery),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildActionButton({required IconData icon, required String label, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: _softBoxDecoration(),
+            child: Icon(icon, color: const Color(0xFF5A4B5A), size: 30),
+          ),
+          const SizedBox(height: 8),
+          Text(label, style: const TextStyle(color: Color(0xFF5A4B5A), fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
+  }
+
+  BoxDecoration _softBoxDecoration() {
+    return BoxDecoration(
+      color: const Color(0xFFFAE1FA),
+      borderRadius: BorderRadius.circular(24),
+      boxShadow: [
+        BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 15, offset: const Offset(8, 8)),
+        BoxShadow(color: Colors.white.withOpacity(0.8), blurRadius: 15, offset: const Offset(-8, -8)),
+      ],
     );
   }
 }
