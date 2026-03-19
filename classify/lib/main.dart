@@ -40,7 +40,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
   String? _label;
   double? _confidence;
   final _picker = ImagePicker();
-  
+
   Interpreter? _interpreter;
   List<String>? _labels;
 
@@ -157,7 +157,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
           children: [
             const SizedBox(height: 80),
             const Text(
-              "Waydroid x86_64 Compatible",
+              "Recognize Fruit Easily",
               style: TextStyle(
                 color: Color(0xFF5A4B5A),
                 fontSize: 16,
@@ -166,7 +166,7 @@ class _ClassificationScreenState extends State<ClassificationScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              "TFLite Flutter",
+              "Classify",
               style: TextStyle(
                 color: Color(0xFF322A32),
                 fontWeight: FontWeight.bold,
